@@ -1,0 +1,44 @@
+Description:
+    Explain the generator
+
+Command:
+    rails generate authorize_rbac install
+
+    This will:
+        - Role Role Model and database migration.
+        - Create AddRoleToUsers database migration.
+        - Add the following lines to the ApplicationController
+          ```
+            include AuthorizeRbac
+            before_action :authorization_filter, except: [ :logout ]
+          ```
+
+Command:
+    rails generate authorize_rbac user_migrate
+
+    This will:
+        - Create AddRoleToUsers database migration.
+
+Command:
+    rails generate authorize_rbac role_migrate
+
+    This will:
+        - Role Role Model and database migration.
+
+Command:
+    rails generate authorize_rbac update_application_controller
+
+    This will:
+        - Add the following lines to the ApplicationController
+          ```
+            include AuthorizeRbac
+            before_action :authorization_filter, except: [ :logout ]
+          ```
+Command:
+    rails generate authorize_rbac update_user_model
+
+    This will:
+        - Add the following lines to the User Model
+          ```
+            belongs_to :role
+          ```
