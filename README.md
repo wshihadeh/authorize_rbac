@@ -1,9 +1,5 @@
 # AuthorizeRbac
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/authorize_rbac`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -22,20 +18,65 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+- Generate necessary changes
+  - You can generate all migration using the follwing command
 
-## Development
+    ```
+      bundle exec rails g authorize_rbac install
+    ```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+  - Or you can do it one by one
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+    ```
+    bundle exec rails g authorize_rbac user_migrate
+    bundle exec rails g authorize_rbac role_migrate
+    bundle exec rails g authorize_rbac update_application_controller
+    bundle exec rails g authorize_rbac update_user_model
+    bundle exec rails g authorize_rbac initializer
+    ```
 
-## Contributing
+  - Generator help
+    ```
+    bundle exec rails g authorize_rbac user_migrate
+    ```
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/authorize_rbac.
+- Check the generated files and update them if necessary
+- Execute migration
+  ```
+  bundle exec rake db:migrate
+  ```
 
+- Update Controller Methods with the allowed roles
+  ```
+   class MyController < ApplicationController
+
+    roles :admin
+    def admin_only
+      "admin"
+    end
+
+    roles :admin, :user
+    def admin_and_user
+      "admin_and_user"
+    end
+
+    def all
+      "all"
+    end
+  end
+  ```
+
+  - Default role is user, you need to update the registration process to assign users to roles.
+  - if roles is not defined for a given action, then the action is allowed for all users.
+  - To add a dynamic permission for a given role from rails console, use the following commands
+  ```
+  $-> role = Role.find :id
+  $-> role.permissions = [:admin_index]
+  $-> role.save
+
+  ```
+- role.permissions is an array of all allowed actions. The items of this array are constructed with the following schema "#{controller_name}_#{action_name}". for instance, to allow the action `users` on `AdminController`, you need to add this to the permissions list `:admin_users`.
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
